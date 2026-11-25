@@ -1,215 +1,173 @@
-# Customer Segmentation — K-Means Clustering
+[task_04_professional_readme.md](https://github.com/user-attachments/files/35402877/task_04_professional_readme.md)
+> [!NOTE]
+> **IncodeVision Data Science Internship · Task 04 (Track Code: DS)**
+>
+> An end-to-end unsupervised machine learning pipeline that segments **200 mall customers** into **6 actionable marketing personas** using K-Means clustering, PCA, and automated z-score profiling.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10%2B-blue?logo=python" />
-  <img src="https://img.shields.io/badge/Scikit--Learn-Machine%20Learning-F7931E?logo=scikitlearn" />
-  <img src="https://img.shields.io/badge/Pandas-Data%20Analysis-150458?logo=pandas" />
-  <img src="https://img.shields.io/badge/Status-Completed-success" />
-</p>
+<div align="center">
 
-<p align="center">
-  <b>An unsupervised machine learning project that identifies customer groups based on age, annual income, and spending behaviour.</b>
-</p>
+<h1>Customer Segmentation (K-Means)</h1>
+
+**Turn raw customer behavior into 6 actionable marketing personas.**
+
+An unsupervised clustering and customer profiling pipeline built on the Mall Customers dataset using `scikit-learn`, `pandas`, and `seaborn`.
+
+![License](https://img.shields.io/badge/license-MIT-5865F2?style=flat-square)
+![Python](https://img.shields.io/badge/python-3.9%2B-3776AB?style=flat-square&logo=python&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-KMeans%20%7C%20PCA-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
+![pandas](https://img.shields.io/badge/pandas-data%20profiling-150458?style=flat-square&logo=pandas&logoColor=white)
+![Jupyter](https://img.shields.io/badge/notebook-Jupyter-F37626?style=flat-square&logo=jupyter&logoColor=white)
+
+<br/>
+
+[Segments](#-customer-segments--strategy) · [Methodology](#-pipeline-architecture) · [Project Structure](#-project-structure) · [Quick Start](#-quick-start) · [Visuals](#-additional-eda--profiling-charts)
+
+</div>
+
+<br/>
+
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="outputs/03_elbow_silhouette.png" alt="Elbow and Silhouette Score" />
+      <br/><br/>
+      <b>Optimal k Selection</b>
+      <br/>
+      <sub>elbow + silhouette · best k = 6 (0.428)</sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="outputs/04_clusters_income_spending.png" alt="Income vs Spending Score Clusters" />
+      <br/><br/>
+      <b>Income vs. Spending</b>
+      <br/>
+      <sub>6 distinct segments · 200 customers</sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="outputs/05_clusters_pca.png" alt="2D PCA Cluster Projection" />
+      <br/><br/>
+      <b>2D PCA Projection</b>
+      <br/>
+      <sub>age, income &amp; spending · 2D view</sub>
+    </td>
+  </tr>
+</table>
 
 ---
 
-## Project Overview
+## Customer Segments & Strategy
 
-Understanding customer behaviour is important for businesses that want to improve marketing strategies, customer engagement, and business decisions.
+**Dataset:** Mall Customers (`200 rows × 5 columns`: `CustomerID`, `Gender`, `Age`, `Income`, `SpendingScore`) — verified clean with **0 missing values** and **0 duplicates**.
 
-This project applies K-Means clustering to the Mall Customers dataset to identify groups of customers with similar characteristics.
+| Cluster | Customers | Avg Age | Avg Income | Avg Spending | Female % | Segment Persona | Recommended Action |
+| :---: | :---: | :---: | :---: | :---: | :---: | :--- | :--- |
+| **3** | 39 | 32.7 | $86.5k | 82.1 | 53.8% | **VIP High-Spenders** *(High income, high spending, middle-aged)* | Prioritize with loyalty tiers, VIP perks, and premium launches. |
+| **4** | 23 | 25.0 | $25.3k | 77.6 | 56.5% | **Trend-Driven Youth** *(Low income, high spending, younger)* | Target with flash sales, social media drops, and bundle deals. |
+| **2** | 33 | 41.9 | $88.9k | 17.0 | 42.4% | **Untapped High-Earners** *(High income, low spending, middle-aged)* | Highest growth opportunity: run personalized re-engagement campaigns. |
+| **0** | 45 | 56.3 | $54.3k | 49.1 | 57.8% | **Steady Mature Base** *(Average income, average spending, older)* | Retain with consistent value offers and seasonal promotions. |
+| **1** | 39 | 26.8 | $57.1k | 48.1 | 64.1% | **Emerging Core** *(Average income, average spending, younger)* | Nurture early via membership rewards to grow lifetime value. |
+| **5** | 21 | 45.5 | $26.3k | 19.4 | 61.9% | **Budget-Conscious** *(Low income, low spending, middle-aged)* | Keep acquisition cost low; focus on clearance and discount alerts. |
 
-The analysis uses customer age, annual income, and spending score to discover meaningful customer segments without predefined labels.
+> [!TIP]
+> **Why `k = 6` instead of `k = 5`?**
+>
+> Evaluating $k \in [2, 10]$ on standardized `Age`, `Income`, and `SpendingScore` shows the highest Silhouette Score at **`k = 6` (`0.428`)** versus `k = 5` (`0.417`). Adding `Age` cleanly separates average spenders into **Older Steady Shoppers (Cluster 0, avg age 56.3)** and **Younger Growth Shoppers (Cluster 1, avg age 26.8)**.
 
-## Dataset Information
+---
 
-| Attribute | Details |
-|---|---|
-| Dataset | Mall Customers |
-| Total records | 200 |
-| Missing values | 0 |
-| Duplicate records | 0 |
-| Clustering features | Age, Annual Income, Spending Score |
-| Algorithm | K-Means Clustering |
-| Selected clusters | 6 |
+## Pipeline Architecture
 
-`CustomerID` was excluded from clustering, while `Gender` was reserved for customer profiling.
+Every step is reproducible across both the Jupyter notebook and the standalone Python script:
 
-## Model Results
+| Step | Stage | What Happens |
+| :---: | :--- | :--- |
+| **1** | **Data Audit** | Loads `Mall_Customers.csv` (`200 × 5`), standardizes column names, and confirms `0` nulls and `0` duplicates. |
+| **2** | **EDA** | Plots KDE histograms for `Age`, `Income`, and `SpendingScore` plus a feature correlation heatmap. |
+| **3** | **Scaling** | Applies `StandardScaler` to `Age`, `Income`, and `SpendingScore` so all features contribute equally to Euclidean distance. |
+| **4** | **Model Selection** | Sweeps `k = 2..10` using Elbow (Inertia) and Silhouette Score, exporting metrics to `outputs/k_selection.csv`. |
+| **5** | **Clustering** | Fits final `KMeans(n_clusters=6, n_init=10, random_state=42)` and assigns cluster labels. |
+| **6** | **Visualization** | Generates Income vs. Spending scatter plot and 2D PCA projection (`PCA(n_components=2)`). |
+| **7** | **Profiling & Export** | Computes per-cluster stats, auto-labels personas via z-score thresholds, and saves final CSVs & bar chart. |
+
+---
+
+## Additional EDA & Profiling Charts
 
 <details>
-<summary><b>Customer Segment Analysis</b></summary>
+<summary><b>Click to view EDA distributions, correlation heatmap, and segment spending chart</b></summary>
+<br/>
 
-| Cluster | Customers | Avg. Age | Avg. Income | Avg. Spending Score |
-|---|---:|---:|---:|---:|
-| 3 | 39 | 32.7 | 86.5 | 82.1 |
-| 4 | 23 | 25.0 | 25.3 | 77.6 |
-| 2 | 33 | 41.9 | 88.9 | 17.0 |
-| 5 | 21 | 45.5 | 26.3 | 19.4 |
-| 0 | 45 | 56.3 | 54.3 | 49.1 |
-| 1 | 39 | 26.8 | 57.1 | 48.1 |
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="outputs/01_distributions.png" alt="Feature Distributions" />
+      <br/><sub><b>Feature Distributions</b></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="outputs/02_correlation.png" alt="Correlation Heatmap" />
+      <br/><sub><b>Correlation Matrix</b></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="outputs/06_segment_spending.png" alt="Average Spending per Segment" />
+      <br/><sub><b>Avg Spending per Cluster</b></sub>
+    </td>
+  </tr>
+</table>
 
 </details>
 
-**Best silhouette score:** Approximately 0.428 at k = 6.
+---
 
-The selected model uses six clusters based on the cluster-selection analysis.
-
-## Methodology
-
-### 1. Data Exploration
-- Loaded the customer dataset.
-- Inspected dimensions, data types, and descriptive statistics.
-- Checked missing values and duplicate records.
-
-### 2. Feature Selection
-Selected the following features:
-
-- Age
-- Annual Income
-- Spending Score
-
-Excluded `CustomerID` because it is an identifier rather than a meaningful behavioural feature.
-
-### 3. Feature Scaling
-
-Applied `StandardScaler` to standardize numerical features before clustering.
-
-### 4. Optimal Cluster Selection
-
-Evaluated different values of k from 2 to 10 using:
-
-- Elbow Method
-- Silhouette Score
-
-The highest silhouette score was approximately 0.428 at k = 6.
-
-### 5. K-Means Model Training
-
-```python
-KMeans(
-    n_clusters=6,
-    n_init=10,
-    random_state=42
-)
-```
-
-### 6. Customer Profiling
-
-Analysed the resulting clusters using average age, annual income, and spending score to understand customer behaviour.
-
-## Key Insights
-
-- **Cluster 3:** Higher-income customers with high spending scores.
-- **Cluster 4:** Younger customers with lower income but high spending scores.
-- **Cluster 2:** Higher-income customers with low spending scores.
-- **Cluster 5:** Lower-income customers with low spending scores.
-- **Cluster 0:** Older customers with moderate income and spending.
-- **Cluster 1:** Younger customers with moderate income and spending.
-
-These segments can help businesses think about differentiated marketing and customer engagement strategies.
-
-## Technologies Used
-
-- Python
-- Pandas
-- NumPy
-- Matplotlib
-- Seaborn
-- Scikit-learn
-- Jupyter Notebook
-
-## Repository Structure
+## Project Structure
 
 ```text
 DS-Task04-Customer-Segmentation/
-│
 ├── data/
-│   └── Mall_Customers.csv
-│
+│   └── Mall_Customers.csv              # Raw dataset (200 customers)
 ├── outputs/
-│   ├── 01_distributions.png
-│   ├── 02_correlation_heatmap.png
-│   ├── 03_elbow_method.png
-│   ├── 04_silhouette_scores.png
-│   ├── 05_customer_clusters.png
-│   ├── 06_segment_spending.png
-│   ├── customers_with_segments.csv
-│   ├── segment_profile.csv
-│   └── k_selection.csv
-│
-├── customer_segmentation.ipynb
-├── customer_segmentation.py
-├── requirements.txt
+│   ├── 01_distributions.png            # Age, Income & Spending histograms
+│   ├── 02_correlation.png              # Correlation heatmap
+│   ├── 03_elbow_silhouette.png         # Elbow & Silhouette score curves
+│   ├── 04_clusters_income_spending.png # Income vs. Spending scatter plot
+│   ├── 05_clusters_pca.png             # 2D PCA cluster visualization
+│   ├── 06_segment_spending.png         # Average spending score per cluster
+│   ├── customers_with_segments.csv     # Original data + assigned Cluster ID
+│   ├── segment_profile.csv             # Aggregated stats + auto-generated persona names
+│   └── k_selection.csv                 # Inertia & Silhouette metrics for k = 2..10
 ├── .gitignore
-└── README.md
+├── customer_segmentation.ipynb         # Interactive notebook with outputs (start here)
+├── customer_segmentation.py            # Reusable standalone pipeline script
+├── LICENSE                             # MIT License
+├── README.md
+└── requirements.txt
 ```
 
-## Getting Started
+---
+
+## Quick Start
 
 ### 1. Clone the repository
-
 ```bash
-git clone https://github.com/Saklin-labs/DS-Task04-Customer-Segmentation.git
+git clone https://github.com/Sohan186/DS-Task04-Customer-Segmentation.git
 cd DS-Task04-Customer-Segmentation
 ```
 
-### 2. Create a virtual environment
-
-```bash
-python -m venv venv
-```
-
-Activate it:
-
-**Windows**
-```bash
-venv\Scripts\activate
-```
-
-**macOS / Linux**
-```bash
-source venv/bin/activate
-```
-
-### 3. Install dependencies
-
+### 2. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Run the project
-
+### 3. Run the pipeline
+Open the full walkthrough with inline outputs in [`customer_segmentation.ipynb`](customer_segmentation.ipynb), or execute the script directly:
 ```bash
 python customer_segmentation.py
 ```
 
-Alternatively, explore the complete workflow in `customer_segmentation.ipynb`.
-
-## Skills Demonstrated
-
-- Unsupervised Machine Learning
-- K-Means Clustering
-- Feature Selection
-- Feature Scaling
-- Elbow Method
-- Silhouette Analysis
-- Customer Segmentation
-- Data Visualization
-- Cluster Profiling
-- Business-Oriented Data Interpretation
-
-## Author
-
-**Saklin Mostak Molla**
-
-B.Sc. Data Science Student | Aspiring Data Scientist
-
-- GitHub: [@Saklin-labs](https://github.com/Saklin-labs)
-- LinkedIn: [Saklin Molla](https://www.linkedin.com/in/saklin-molla-824b292b3/)
-
 ---
 
-<p align="center">
-  <i>Using unsupervised learning to discover meaningful customer patterns.</i>
-</p>
+## Tech Stack & License
+
+- **Core:** Python 3.9+, pandas, NumPy
+- **Machine Learning:** scikit-learn (`StandardScaler`, `KMeans`, `PCA`, `silhouette_score`)
+- **Visualization:** matplotlib, seaborn
+- **Environment:** Jupyter Notebook
+- **License:** Distributed under the [MIT License](LICENSE) © 2026 Saklin Mostak Molla
