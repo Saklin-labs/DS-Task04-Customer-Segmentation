@@ -1,4 +1,4 @@
-(https://github.com/user-attachments/files/35402970/task_04_professional_readme.1.md)
+
 > [!NOTE]
 > **IncodeVision Data Science Internship · Task 04 (Track Code: DS)**
 >
