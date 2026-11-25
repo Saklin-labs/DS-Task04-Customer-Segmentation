@@ -1,68 +1,212 @@
-# Customer Segmentation Analysis (K-Means Clustering)
+[README_Task01_Data_Cleaning.md](https://github.com/user-attachments/files/35402169/README_Task01_Data_Cleaning.md)
+::: {align="center"}
+# Data Cleaning & Preprocessing Pipeline
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white) ![pandas](https://img.shields.io/badge/pandas-150458?logo=pandas&logoColor=white) ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?logo=scikitlearn&logoColor=white) ![Jupyter](https://img.shields.io/badge/Notebook-Jupyter-F37626?logo=jupyter&logoColor=white) ![License](https://img.shields.io/badge/License-MIT-green)
+**Transforming raw Titanic passenger data into clean, consistent,
+analysis-ready datasets.**
 
-**IncodeVision Data Science Internship | Task 04 (Track Code: DS)**
+![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-Data%20Wrangling-150458?logo=pandas&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-Numerical%20Computing-013243?logo=numpy&logoColor=white)
+![Seaborn](https://img.shields.io/badge/Seaborn-Visualization-4C72B0)
+![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?logo=jupyter&logoColor=white)
 
-Groups mall customers into segments using clustering so a business can target each group differently.
+**IncodeVision · Data Science Internship · Task 01**
+:::
 
-**Dataset:** Mall Customers (200 customers: Gender, Age, Annual Income in k$, Spending Score 1-100). No missing values or duplicates were found. The dataset is included in this project bundle; its original source/author metadata was not included with the supplied files.
+------------------------------------------------------------------------
 
-## Approach
+## Overview
 
-1. **EDA:** distributions of Age, Income, Spending Score and a correlation heatmap.
-2. **Scaling:** `StandardScaler` on Age, Income and Spending Score so no feature dominates.
-3. **Choosing k:** elbow method plus silhouette score for k = 2 to 10. Silhouette is highest at **k = 6** (0.428).
-4. **Model:** K-Means (`k=6`, `n_init=10`, `random_state=42`).
-5. **Visualisation:** Income vs Spending scatter and a 2D PCA view.
-6. **Profiling:** average age, income, spending and gender mix for each segment.
+This project demonstrates an end-to-end data cleaning and preprocessing
+workflow using the Titanic passenger dataset. The objective is to
+identify and address common data quality issues---such as missing
+values, duplicate records, inconsistent categorical values, and
+numerical outliers---and prepare reliable datasets for further analysis
+and machine learning.
 
-## Customer segments
+The workflow is implemented in both a Jupyter Notebook and a reusable
+Python script. Key cleaning decisions are documented, and intermediate
+visualizations and summary files are generated for transparency.
 
-| Cluster | Customers | Avg age | Avg income (k$) | Avg spending | Who they are |
-|---|---|---|---|---|---|
-| 3 | 39 | 32.7 | 86.5 | 82.1 | **High income, high spending.** Best customers: loyalty and premium offers |
-| 4 | 23 | 25.0 | 25.3 | 77.6 | **Low income, high spending, young.** Trend-driven: discounts, new arrivals |
-| 2 | 33 | 41.9 | 88.9 | 17.0 | **High income, low spending.** Big opportunity: personalised campaigns |
-| 5 | 21 | 45.5 | 26.3 | 19.4 | **Low income, low spending.** Low priority, keep costs low |
-| 0 | 45 | 56.3 | 54.3 | 49.1 | **Average income and spending, older.** Steady base: regular offers |
-| 1 | 39 | 26.8 | 57.1 | 48.1 | **Average income and spending, younger.** Growth group: engage early |
+## Dataset
 
-## Project structure
+-   **Dataset:** Titanic passenger dataset
+-   **Initial dimensions:** 891 rows × 15 columns
+-   **Source:** [seaborn-data --- Titanic
+    dataset](https://github.com/mwaskom/seaborn-data)
+-   **Data format:** CSV
 
-```
-DS-Task04-Customer-Segmentation/
-├── customer_segmentation.ipynb
-├── customer_segmentation.py
+The dataset contains passenger attributes such as age, sex, passenger
+class, fare, family information, embarkation point, and survival status.
+
+## Key Results
+
+  Data quality measure     Before cleaning   After cleaning
+  ---------------------- ----------------- ----------------
+  Rows                                 891              784
+  Columns                               15               12
+  Missing cells                        869                0
+  Exact duplicate rows                 107                0
+
+> **Data integrity note:** Seven rows appear identical after
+> missing-value imputation. Because the dataset does not provide a
+> unique passenger identifier, these records were retained rather than
+> assumed to be duplicate passengers.
+
+## Workflow
+
+1.  **Initial inspection**
+    -   Reviewed dataset dimensions, data types, missing values, and
+        duplicate records.
+    -   Generated a visualization of missing-value patterns.
+2.  **Duplicate handling**
+    -   Removed 107 exact duplicate rows.
+    -   Reset the DataFrame index after deduplication.
+3.  **Data standardization**
+    -   Trimmed whitespace from text columns.
+    -   Standardized categorical text casing for consistent values.
+4.  **Redundant feature removal**
+    -   Removed `alive`, `class`, and `embark_town` because they
+        duplicate information represented by other columns.
+5.  **Missing-value treatment**
+    -   `deck`: filled missing values with `Unknown` because the column
+        had a high proportion of missing data.
+    -   `embarked`: filled missing values using the mode.
+    -   `age`: imputed using the median within each `pclass` and `sex`
+        group.
+6.  **Data type correction**
+    -   Converted suitable columns to integer, boolean, and categorical
+        data types.
+7.  **Outlier treatment**
+    -   Applied the Interquartile Range (IQR) rule to identify outliers
+        in `fare` and `age`.
+    -   Capped extreme values instead of deleting observations.
+8.  **Feature engineering and preprocessing**
+    -   Created `family_size` from `sibsp`, `parch`, and the passenger.
+    -   Applied one-hot encoding to categorical features.
+    -   Standardized selected numerical features for the ML-ready
+        output.
+9.  **Validation and export**
+    -   Checked that the cleaned dataset contains no missing cells.
+    -   Exported cleaned data, ML-ready data, a summary table, and a
+        processing log.
+
+## Repository Structure
+
+``` text
+DS-Task01-Data-Cleaning/
+│
+├── data/
+│   ├── titanic_raw.csv
+│   ├── titanic_clean.csv
+│   └── titanic_ml_ready.csv
+│
+├── outputs/
+│   ├── 01_missing_before.png
+│   ├── 02_outliers_fare.png
+│   ├── 03_missing_after.png
+│   ├── cleaning_summary.csv
+│   └── cleaning_log.txt
+│
+├── data_cleaning.ipynb
+├── data_cleaning.py
 ├── requirements.txt
-├── data/Mall_Customers.csv
-└── outputs/
-    ├── 01_distributions.png
-    ├── 02_correlation.png
-    ├── 03_elbow_silhouette.png
-    ├── 04_clusters_income_spending.png
-    ├── 05_clusters_pca.png
-    ├── 06_segment_spending.png
-    ├── customers_with_segments.csv
-    ├── segment_profile.csv
-    └── k_selection.csv
+└── README.md
 ```
 
-## How to run
+## Visual Results
 
-Open the notebook for the full walkthrough with outputs: [`customer_segmentation.ipynb`](customer_segmentation.ipynb). Or run the script:
+### Missing values before cleaning
 
-```bash
+![Missing values before cleaning](outputs/01_missing_before.png)
+
+### Outlier treatment
+
+![Fare outlier treatment](outputs/02_outliers_fare.png)
+
+### Missing values after cleaning
+
+![Missing values after cleaning](outputs/03_missing_after.png)
+
+## Getting Started
+
+### 1. Clone the repository
+
+``` bash
+git clone https://github.com/Saklin-labs/DS-Task01-Data-Cleaning.git
+cd DS-Task01-Data-Cleaning
+```
+
+### 2. (Recommended) Create and activate a virtual environment
+
+``` bash
+python -m venv .venv
+```
+
+**Windows**
+
+``` bash
+.venv\Scripts\activate
+```
+
+**macOS / Linux**
+
+``` bash
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+``` bash
 pip install -r requirements.txt
-python customer_segmentation.py
 ```
 
-## Visuals
+### 4. Run the pipeline
 
-![Elbow and silhouette](outputs/03_elbow_silhouette.png)
-![Segments](outputs/04_clusters_income_spending.png)
-![PCA](outputs/05_clusters_pca.png)
+``` bash
+python data_cleaning.py
+```
 
-## Tech stack
+The script reads `data/titanic_raw.csv` and generates the cleaned
+datasets and output files in the project directories.
 
-Python, pandas, NumPy, matplotlib, seaborn, scikit-learn.
+To explore the full step-by-step analysis, open `data_cleaning.ipynb` in
+Jupyter Notebook or VS Code.
+
+## Technology Stack
+
+  Tool / Library     Purpose
+  ------------------ ---------------------------------------------------
+  Python             Core programming language
+  Pandas             Data manipulation and cleaning
+  NumPy              Numerical operations
+  Matplotlib         Data visualization
+  Seaborn            Statistical plots and missing-value visualization
+  Jupyter Notebook   Interactive analysis and documentation
+
+## Skills Demonstrated
+
+-   Data quality assessment
+-   Missing-value analysis and imputation
+-   Duplicate detection and removal
+-   Categorical data standardization
+-   Data type correction
+-   IQR-based outlier detection and capping
+-   Feature engineering
+-   One-hot encoding and numerical scaling
+-   Reproducible Python data workflows
+
+## Author
+
+**Saklin Mostak Molla**\
+Data Science Student \| Aspiring Data Scientist
+
+-   GitHub: [@Saklin-labs](https://github.com/Saklin-labs)
+
+------------------------------------------------------------------------
+
+::: {align="center"}
+*Completed as part of the IncodeVision Data Science Internship --- Task
+01.*
+:::
