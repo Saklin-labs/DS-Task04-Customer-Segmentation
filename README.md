@@ -1,114 +1,131 @@
-[task_04_professional_readme.md](https://github.com/user-attachments/files/35402877/task_04_professional_readme.md)
+[task_04_professional_readme.md](https://github.com/user-attachments/files/35402970/task_04_professional_readme.1.md)
 > [!NOTE]
 > **IncodeVision Data Science Internship · Task 04 (Track Code: DS)**
 >
-> An end-to-end unsupervised machine learning pipeline that segments **200 mall customers** into **6 actionable marketing personas** using K-Means clustering, PCA, and automated z-score profiling.
+> End-to-end unsupervised machine learning pipeline that segments **200 mall customers** into **6 actionable marketing personas** using K-Means clustering, PCA projection, and automated z-score profiling (`Silhouette Score: 0.428`).
 
 <div align="center">
-
-<h1>Customer Segmentation (K-Means)</h1>
-
-**Turn raw customer behavior into 6 actionable marketing personas.**
-
-An unsupervised clustering and customer profiling pipeline built on the Mall Customers dataset using `scikit-learn`, `pandas`, and `seaborn`.
-
-![License](https://img.shields.io/badge/license-MIT-5865F2?style=flat-square)
-![Python](https://img.shields.io/badge/python-3.9%2B-3776AB?style=flat-square&logo=python&logoColor=white)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-KMeans%20%7C%20PCA-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
-![pandas](https://img.shields.io/badge/pandas-data%20profiling-150458?style=flat-square&logo=pandas&logoColor=white)
-![Jupyter](https://img.shields.io/badge/notebook-Jupyter-F37626?style=flat-square&logo=jupyter&logoColor=white)
-
-<br/>
-
-[Segments](#-customer-segments--strategy) · [Methodology](#-pipeline-architecture) · [Project Structure](#-project-structure) · [Quick Start](#-quick-start) · [Visuals](#-additional-eda--profiling-charts)
-
+  <br />
+  <img src="https://img.icons8.com/fluency/96/combo-chart.png" alt="Customer Segmentation Logo" width="84" height="84" />
+  <h1>Customer Segmentation</h1>
+  <p><strong>Turn raw shopping behavior into 6 actionable customer personas.</strong></p>
+  <p>Open-source unsupervised K-Means clustering, PCA visualization, and automated profiling built with <code>scikit-learn</code>, <code>pandas</code>, and <code>seaborn</code>.</p>
+  <p>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-6C63FF?style=flat" alt="MIT License" /></a>
+    <img src="https://img.shields.io/badge/python-3.9%2B-3776AB?style=flat" alt="Python 3.9+" />
+    <img src="https://img.shields.io/badge/scikit--learn-K--Means%20%2B%20PCA-F7931E?style=flat" alt="scikit-learn" />
+    <img src="https://img.shields.io/badge/clusters-k%20%3D%206-10B981?style=flat" alt="Clusters k=6" />
+    <img src="https://img.shields.io/badge/silhouette-0.428-EC4899?style=flat" alt="Silhouette 0.428" />
+  </p>
+  <p>
+    <a href="#customer-segments--strategy">Segments</a> ·
+    <a href="#pipeline-architecture">Pipeline</a> ·
+    <a href="#eda--profiling-visuals">Visuals</a> ·
+    <a href="#project-structure">Structure</a> ·
+    <a href="#quick-start">Quick Start</a>
+  </p>
 </div>
 
-<br/>
+<br />
 
 <table>
   <tr>
     <td align="center" width="33%">
-      <img src="outputs/03_elbow_silhouette.png" alt="Elbow and Silhouette Score" />
-      <br/><br/>
-      <b>Optimal k Selection</b>
-      <br/>
-      <sub>elbow + silhouette · best k = 6 (0.428)</sub>
+      <a href="outputs/03_elbow_silhouette.png">
+        <img src="outputs/03_elbow_silhouette.png" alt="Elbow and Silhouette Curves" width="100%" />
+      </a>
+      <br />
+      <strong>Optimal k Selection</strong><br />
+      <sub>elbow & silhouette · best k = 6 · score 0.428</sub>
     </td>
     <td align="center" width="33%">
-      <img src="outputs/04_clusters_income_spending.png" alt="Income vs Spending Score Clusters" />
-      <br/><br/>
-      <b>Income vs. Spending</b>
-      <br/>
-      <sub>6 distinct segments · 200 customers</sub>
+      <a href="outputs/04_clusters_income_spending.png">
+        <img src="outputs/04_clusters_income_spending.png" alt="Income vs Spending Segments" width="100%" />
+      </a>
+      <br />
+      <strong>Income vs. Spending</strong><br />
+      <sub>k-means · 200 customers · 6 clusters</sub>
     </td>
     <td align="center" width="33%">
-      <img src="outputs/05_clusters_pca.png" alt="2D PCA Cluster Projection" />
-      <br/><br/>
-      <b>2D PCA Projection</b>
-      <br/>
-      <sub>age, income &amp; spending · 2D view</sub>
+      <a href="outputs/05_clusters_pca.png">
+        <img src="outputs/05_clusters_pca.png" alt="2D PCA Cluster Projection" width="100%" />
+      </a>
+      <br />
+      <strong>2D PCA Projection</strong><br />
+      <sub>age, income & spending · 2 components</sub>
     </td>
   </tr>
 </table>
 
----
+<br />
 
 ## Customer Segments & Strategy
 
-**Dataset:** Mall Customers (`200 rows × 5 columns`: `CustomerID`, `Gender`, `Age`, `Income`, `SpendingScore`) — verified clean with **0 missing values** and **0 duplicates**.
+**Dataset:** Mall Customers (`200 rows × 5 columns`: `CustomerID`, `Gender`, `Age`, `Income`, `SpendingScore`) — audited clean with **0 missing values** and **0 duplicate rows**.
 
-| Cluster | Customers | Avg Age | Avg Income | Avg Spending | Female % | Segment Persona | Recommended Action |
+| Cluster | Customers | Avg Age | Avg Income (k$) | Avg Spending | Female % | Segment Persona | Recommended Marketing Action |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- | :--- |
-| **3** | 39 | 32.7 | $86.5k | 82.1 | 53.8% | **VIP High-Spenders** *(High income, high spending, middle-aged)* | Prioritize with loyalty tiers, VIP perks, and premium launches. |
-| **4** | 23 | 25.0 | $25.3k | 77.6 | 56.5% | **Trend-Driven Youth** *(Low income, high spending, younger)* | Target with flash sales, social media drops, and bundle deals. |
-| **2** | 33 | 41.9 | $88.9k | 17.0 | 42.4% | **Untapped High-Earners** *(High income, low spending, middle-aged)* | Highest growth opportunity: run personalized re-engagement campaigns. |
-| **0** | 45 | 56.3 | $54.3k | 49.1 | 57.8% | **Steady Mature Base** *(Average income, average spending, older)* | Retain with consistent value offers and seasonal promotions. |
-| **1** | 39 | 26.8 | $57.1k | 48.1 | 64.1% | **Emerging Core** *(Average income, average spending, younger)* | Nurture early via membership rewards to grow lifetime value. |
-| **5** | 21 | 45.5 | $26.3k | 19.4 | 61.9% | **Budget-Conscious** *(Low income, low spending, middle-aged)* | Keep acquisition cost low; focus on clearance and discount alerts. |
+| **3** | 39 | 32.7 | 86.5 | 82.1 | 53.8% | **VIP High-Spenders**<br /><sub>High income · High spending · Middle-aged</sub> | Prioritize with VIP loyalty tiers, early access, and premium launches. |
+| **4** | 23 | 25.0 | 25.3 | 77.6 | 56.5% | **Trend-Driven Youth**<br /><sub>Low income · High spending · Younger</sub> | Target with flash sales, social media campaigns, and new-arrival drops. |
+| **2** | 33 | 41.9 | 88.9 | 17.0 | 42.4% | **Untapped High-Earners**<br /><sub>High income · Low spending · Middle-aged</sub> | Highest growth potential: run personalized offers to convert spending. |
+| **0** | 45 | 56.3 | 54.3 | 49.1 | 57.8% | **Steady Mature Base**<br /><sub>Average income · Average spending · Older</sub> | Retain with consistent value bundles and seasonal promotions. |
+| **1** | 39 | 26.8 | 57.1 | 48.1 | 64.1% | **Emerging Core**<br /><sub>Average income · Average spending · Younger</sub> | Engage early with membership perks to increase lifetime value. |
+| **5** | 21 | 45.5 | 26.3 | 19.4 | 61.9% | **Budget-Conscious**<br /><sub>Low income · Low spending · Middle-aged</sub> | Keep acquisition costs low; focus on clearance and discount alerts. |
 
 > [!TIP]
 > **Why `k = 6` instead of `k = 5`?**
 >
-> Evaluating $k \in [2, 10]$ on standardized `Age`, `Income`, and `SpendingScore` shows the highest Silhouette Score at **`k = 6` (`0.428`)** versus `k = 5` (`0.417`). Adding `Age` cleanly separates average spenders into **Older Steady Shoppers (Cluster 0, avg age 56.3)** and **Younger Growth Shoppers (Cluster 1, avg age 26.8)**.
+> Sweeping `k = 2..10` on standardized `Age`, `Income`, and `SpendingScore` yields the peak Silhouette Score at **`k = 6` (`0.428`)** over `k = 5` (`0.417`). Including `Age` splits average spenders into **Older Steady Shoppers (Cluster 0, avg age 56.3)** and **Younger Emerging Shoppers (Cluster 1, avg age 26.8)** for sharper targeting.
 
 ---
 
 ## Pipeline Architecture
 
-Every step is reproducible across both the Jupyter notebook and the standalone Python script:
+Every stage is fully reproducible across both the interactive notebook and standalone script:
 
-| Step | Stage | What Happens |
+| Step | Stage | Description |
 | :---: | :--- | :--- |
-| **1** | **Data Audit** | Loads `Mall_Customers.csv` (`200 × 5`), standardizes column names, and confirms `0` nulls and `0` duplicates. |
-| **2** | **EDA** | Plots KDE histograms for `Age`, `Income`, and `SpendingScore` plus a feature correlation heatmap. |
-| **3** | **Scaling** | Applies `StandardScaler` to `Age`, `Income`, and `SpendingScore` so all features contribute equally to Euclidean distance. |
-| **4** | **Model Selection** | Sweeps `k = 2..10` using Elbow (Inertia) and Silhouette Score, exporting metrics to `outputs/k_selection.csv`. |
-| **5** | **Clustering** | Fits final `KMeans(n_clusters=6, n_init=10, random_state=42)` and assigns cluster labels. |
-| **6** | **Visualization** | Generates Income vs. Spending scatter plot and 2D PCA projection (`PCA(n_components=2)`). |
-| **7** | **Profiling & Export** | Computes per-cluster stats, auto-labels personas via z-score thresholds, and saves final CSVs & bar chart. |
+| **1** | **Data Audit** | Loads `Mall_Customers.csv` (`200 × 5`), standardizes column names, and verifies `0` nulls and `0` duplicates. |
+| **2** | **EDA** | Generates KDE histograms for `Age`, `Income`, and `SpendingScore` alongside a feature correlation heatmap. |
+| **3** | **Feature Scaling** | Applies `StandardScaler` to `Age`, `Income`, and `SpendingScore` so Euclidean distances remain unbiased. |
+| **4** | **Model Selection** | Evaluates `k = 2..10` via Elbow (Inertia) and Silhouette Score, exporting metrics to `outputs/k_selection.csv`. |
+| **5** | **Clustering** | Fits `KMeans(n_clusters=6, n_init=10, random_state=42)` and assigns each customer to a cluster. |
+| **6** | **Visualization** | Produces an Income vs. Spending scatter plot and a 2D PCA cluster projection (`PCA(n_components=2)`). |
+| **7** | **Profiling & Export** | Aggregates cluster stats, auto-labels personas via z-score thresholds, and saves final CSVs & charts. |
 
 ---
 
-## Additional EDA & Profiling Charts
+## EDA & Profiling Visuals
 
 <details>
-<summary><b>Click to view EDA distributions, correlation heatmap, and segment spending chart</b></summary>
-<br/>
+<summary><strong>Click to expand additional EDA & segment charts (3 plots)</strong></summary>
+<br />
 
 <table>
   <tr>
     <td align="center" width="33%">
-      <img src="outputs/01_distributions.png" alt="Feature Distributions" />
-      <br/><sub><b>Feature Distributions</b></sub>
+      <a href="outputs/01_distributions.png">
+        <img src="outputs/01_distributions.png" alt="Feature Distributions" width="100%" />
+      </a>
+      <br />
+      <strong>Feature Distributions</strong><br />
+      <sub>age, income & spending KDE</sub>
     </td>
     <td align="center" width="33%">
-      <img src="outputs/02_correlation.png" alt="Correlation Heatmap" />
-      <br/><sub><b>Correlation Matrix</b></sub>
+      <a href="outputs/02_correlation.png">
+        <img src="outputs/02_correlation.png" alt="Correlation Heatmap" width="100%" />
+      </a>
+      <br />
+      <strong>Correlation Matrix</strong><br />
+      <sub>pairwise feature relationships</sub>
     </td>
     <td align="center" width="33%">
-      <img src="outputs/06_segment_spending.png" alt="Average Spending per Segment" />
-      <br/><sub><b>Avg Spending per Cluster</b></sub>
+      <a href="outputs/06_segment_spending.png">
+        <img src="outputs/06_segment_spending.png" alt="Average Spending per Segment" width="100%" />
+      </a>
+      <br />
+      <strong>Spending by Segment</strong><br />
+      <sub>mean spending score per cluster</sub>
     </td>
   </tr>
 </table>
@@ -146,18 +163,22 @@ DS-Task04-Customer-Segmentation/
 ## Quick Start
 
 ### 1. Clone the repository
+
 ```bash
 git clone https://github.com/Sohan186/DS-Task04-Customer-Segmentation.git
 cd DS-Task04-Customer-Segmentation
 ```
 
 ### 2. Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 3. Run the pipeline
-Open the full walkthrough with inline outputs in [`customer_segmentation.ipynb`](customer_segmentation.ipynb), or execute the script directly:
+
+Open the full walkthrough with inline outputs in [`customer_segmentation.ipynb`](customer_segmentation.ipynb), or execute the standalone script:
+
 ```bash
 python customer_segmentation.py
 ```
