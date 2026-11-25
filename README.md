@@ -1,169 +1,127 @@
-[README_Task04_Customer_Segmentation.md](https://github.com/user-attachments/files/35402209/README_Task04_Customer_Segmentation.md)
-::: {align="center"}
-# Customer Segmentation Analysis
+# Customer Segmentation — K-Means Clustering
 
-**Discovering customer groups with K-Means clustering and data-driven
-profiling.**
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-blue?logo=python" />
+  <img src="https://img.shields.io/badge/Scikit--Learn-Machine%20Learning-F7931E?logo=scikitlearn" />
+  <img src="https://img.shields.io/badge/Pandas-Data%20Analysis-150458?logo=pandas" />
+  <img src="https://img.shields.io/badge/Status-Completed-success" />
+</p>
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)
-![Pandas](https://img.shields.io/badge/Pandas-Data%20Analysis-150458?logo=pandas&logoColor=white)
-![Scikit-learn](https://img.shields.io/badge/Scikit--learn-Machine%20Learning-F7931E?logo=scikitlearn&logoColor=white)
-![Seaborn](https://img.shields.io/badge/Seaborn-Visualization-4C72B0)
-![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?logo=jupyter&logoColor=white)
+<p align="center">
+  <b>An unsupervised machine learning project that identifies customer groups based on age, annual income, and spending behaviour.</b>
+</p>
 
-**IncodeVision · Data Science Internship · Task 04**
-:::
+---
 
-------------------------------------------------------------------------
+## Project Overview
 
-## Overview
+Understanding customer behaviour is important for businesses that want to improve marketing strategies, customer engagement, and business decisions.
 
-This project applies unsupervised machine learning to segment mall
-customers according to their demographic and spending characteristics.
-Using the Mall Customers dataset, the workflow explores customer
-distributions, scales numerical features, evaluates candidate cluster
-counts, and applies K-Means to identify distinct customer groups.
+This project applies K-Means clustering to the Mall Customers dataset to identify groups of customers with similar characteristics.
 
-The resulting segments are profiled using average age, annual income,
-spending score, and customer count. Visualizations---including an
-income-versus-spending plot and a Principal Component Analysis (PCA)
-projection---help interpret the clustering results.
+The analysis uses customer age, annual income, and spending score to discover meaningful customer segments without predefined labels.
 
-## Business Objective
+## Dataset Information
 
-Customer segmentation can help a business understand differences in
-customer behaviour and develop more relevant marketing strategies.
+| Attribute | Details |
+|---|---|
+| Dataset | Mall Customers |
+| Total records | 200 |
+| Missing values | 0 |
+| Duplicate records | 0 |
+| Clustering features | Age, Annual Income, Spending Score |
+| Algorithm | K-Means Clustering |
+| Selected clusters | 6 |
 
-This analysis focuses on three numerical features:
+`CustomerID` was excluded from clustering, while `Gender` was reserved for customer profiling.
 
--   **Age**
--   **Annual Income (k\$)**
--   **Spending Score (1--100)**
+## Model Results
 
-`CustomerID` is retained for identification and reporting, but it is not
-used as a clustering feature. Gender is used for segment profiling
-rather than model training.
+<details>
+<summary><b>Customer Segment Analysis</b></summary>
 
-## Dataset
+| Cluster | Customers | Avg. Age | Avg. Income | Avg. Spending Score |
+|---|---:|---:|---:|---:|
+| 3 | 39 | 32.7 | 86.5 | 82.1 |
+| 4 | 23 | 25.0 | 25.3 | 77.6 |
+| 2 | 33 | 41.9 | 88.9 | 17.0 |
+| 5 | 21 | 45.5 | 26.3 | 19.4 |
+| 0 | 45 | 56.3 | 54.3 | 49.1 |
+| 1 | 39 | 26.8 | 57.1 | 48.1 |
 
--   **Dataset:** Mall Customers
--   **Records:** 200 customers
--   **Features available:** CustomerID, Gender, Age, Annual Income,
-    Spending Score
--   **Input file:** `data/Mall_Customers.csv`
+</details>
 
-The supplied dataset contains 200 records. The initial inspection found
-no missing values or duplicate rows.
+**Best silhouette score:** Approximately 0.428 at k = 6.
+
+The selected model uses six clusters based on the cluster-selection analysis.
 
 ## Methodology
 
-### 1. Exploratory Data Analysis
+### 1. Data Exploration
+- Loaded the customer dataset.
+- Inspected dimensions, data types, and descriptive statistics.
+- Checked missing values and duplicate records.
 
--   Inspected dataset dimensions, data types, and descriptive
-    statistics.
--   Examined the distributions of age, annual income, and spending
-    score.
--   Reviewed correlations between the numerical features.
+### 2. Feature Selection
+Selected the following features:
 
-### 2. Feature Scaling
+- Age
+- Annual Income
+- Spending Score
 
-Applied `StandardScaler` to age, annual income, and spending score.
-Scaling is important for distance-based algorithms such as K-Means
-because features with larger numerical ranges can otherwise dominate the
-distance calculation.
+Excluded `CustomerID` because it is an identifier rather than a meaningful behavioural feature.
 
-### 3. Selecting the Number of Clusters
+### 3. Feature Scaling
 
-Evaluated candidate values of **k from 2 to 10** using:
+Applied `StandardScaler` to standardize numerical features before clustering.
 
--   **Elbow Method:** compared within-cluster inertia.
--   **Silhouette Score:** evaluated how well observations fit within
-    their assigned clusters compared with other clusters.
+### 4. Optimal Cluster Selection
 
-The highest silhouette score in the evaluated range was obtained at **k
-= 6** (approximately **0.428**), which was selected for the final
-clustering run.
+Evaluated different values of k from 2 to 10 using:
 
-### 4. K-Means Clustering
+- Elbow Method
+- Silhouette Score
 
-Trained the final K-Means model with:
+The highest silhouette score was approximately 0.428 at k = 6.
 
--   `n_clusters = 6`
--   `n_init = 10`
--   `random_state = 42`
+### 5. K-Means Model Training
 
-### 5. Visualization and Segment Profiling
+```python
+KMeans(
+    n_clusters=6,
+    n_init=10,
+    random_state=42
+)
+```
 
--   Plotted customer clusters by annual income and spending score.
--   Used PCA to project the scaled three-dimensional feature space into
-    two dimensions for visualization.
--   Calculated customer counts and average demographic and spending
-    characteristics for each cluster.
+### 6. Customer Profiling
 
-## Results & Customer Profiles
+Analysed the resulting clusters using average age, annual income, and spending score to understand customer behaviour.
 
-The final model identifies six customer segments:
+## Key Insights
 
-  ---------------------------------------------------------------------------------
-       Cluster    Customers     Avg. age  Avg. income         Avg. Segment
-                                                (k\$)     spending interpretation
-                                                             score 
-  ------------ ------------ ------------ ------------ ------------ ----------------
-             3           39         32.7         86.5         82.1 High income,
-                                                                   high spending
+- **Cluster 3:** Higher-income customers with high spending scores.
+- **Cluster 4:** Younger customers with lower income but high spending scores.
+- **Cluster 2:** Higher-income customers with low spending scores.
+- **Cluster 5:** Lower-income customers with low spending scores.
+- **Cluster 0:** Older customers with moderate income and spending.
+- **Cluster 1:** Younger customers with moderate income and spending.
 
-             4           23         25.0         25.3         77.6 Low income, high
-                                                                   spending
+These segments can help businesses think about differentiated marketing and customer engagement strategies.
 
-             2           33         41.9         88.9         17.0 High income, low
-                                                                   spending
+## Technologies Used
 
-             5           21         45.5         26.3         19.4 Low income, low
-                                                                   spending
-
-             0           45         56.3         54.3         49.1 Average income
-                                                                   and spending;
-                                                                   older customers
-
-             1           39         26.8         57.1         48.1 Average income
-                                                                   and spending;
-                                                                   younger
-                                                                   customers
-  ---------------------------------------------------------------------------------
-
-### Potential Business Recommendations
-
-  -----------------------------------------------------------------------
-  Segment                             Suggested action
-  ----------------------------------- -----------------------------------
-  High income, high spending          Prioritize loyalty benefits,
-                                      premium experiences, and retention
-                                      campaigns.
-
-  Low income, high spending           Promote relevant offers, new
-                                      arrivals, and value-oriented
-                                      bundles.
-
-  High income, low spending           Test personalized recommendations
-                                      and targeted engagement campaigns.
-
-  Low income, low spending            Use cost-efficient communication
-                                      and monitor engagement.
-
-  Average income and spending; older  Focus on retention and relevant
-  customers                           regular offers.
-
-  Average income and spending;        Encourage repeat visits through
-  younger customers                   personalized campaigns and
-                                      new-product promotions.
-  -----------------------------------------------------------------------
-
-These recommendations are interpretations of the observed segment
-profiles, not the results of a controlled marketing experiment.
+- Python
+- Pandas
+- NumPy
+- Matplotlib
+- Seaborn
+- Scikit-learn
+- Jupyter Notebook
 
 ## Repository Structure
 
-``` text
+```text
 DS-Task04-Customer-Segmentation/
 │
 ├── data/
@@ -171,10 +129,10 @@ DS-Task04-Customer-Segmentation/
 │
 ├── outputs/
 │   ├── 01_distributions.png
-│   ├── 02_correlation.png
-│   ├── 03_elbow_silhouette.png
-│   ├── 04_clusters_income_spending.png
-│   ├── 05_clusters_pca.png
+│   ├── 02_correlation_heatmap.png
+│   ├── 03_elbow_method.png
+│   ├── 04_silhouette_scores.png
+│   ├── 05_customer_clusters.png
 │   ├── 06_segment_spending.png
 │   ├── customers_with_segments.csv
 │   ├── segment_profile.csv
@@ -183,115 +141,75 @@ DS-Task04-Customer-Segmentation/
 ├── customer_segmentation.ipynb
 ├── customer_segmentation.py
 ├── requirements.txt
+├── .gitignore
 └── README.md
 ```
-
-## Visual Results
-
-### Feature distributions
-
-![Feature distributions](outputs/01_distributions.png)
-
-### Correlation between numerical features
-
-![Correlation heatmap](outputs/02_correlation.png)
-
-### Elbow Method and Silhouette Score
-
-![Cluster selection](outputs/03_elbow_silhouette.png)
-
-### Customer segments: Income vs. Spending Score
-
-![Customer clusters](outputs/04_clusters_income_spending.png)
-
-### Two-dimensional PCA visualization
-
-![PCA cluster visualization](outputs/05_clusters_pca.png)
-
-### Average spending score by segment
-
-![Average spending by segment](outputs/06_segment_spending.png)
 
 ## Getting Started
 
 ### 1. Clone the repository
 
-``` bash
+```bash
 git clone https://github.com/Saklin-labs/DS-Task04-Customer-Segmentation.git
 cd DS-Task04-Customer-Segmentation
 ```
 
-### 2. (Recommended) Create and activate a virtual environment
+### 2. Create a virtual environment
 
-``` bash
-python -m venv .venv
+```bash
+python -m venv venv
 ```
 
-**Windows**
+Activate it:
 
-``` bash
-.venv\Scripts\activate
+**Windows**
+```bash
+venv\Scripts\activate
 ```
 
 **macOS / Linux**
-
-``` bash
-source .venv/bin/activate
+```bash
+source venv/bin/activate
 ```
 
 ### 3. Install dependencies
 
-``` bash
+```bash
 pip install -r requirements.txt
 ```
 
-### 4. Run the analysis
+### 4. Run the project
 
-``` bash
+```bash
 python customer_segmentation.py
 ```
 
-The script reads `data/Mall_Customers.csv` and generates the
-visualizations, cluster assignments, model-selection table, and segment
-profile in the `outputs/` directory.
-
-For the complete step-by-step walkthrough, open
-`customer_segmentation.ipynb` in Jupyter Notebook or VS Code.
-
-## Technology Stack
-
-  Tool / Library     Purpose
-  ------------------ ----------------------------------------------------
-  Python             Core programming language
-  Pandas             Data manipulation and profiling
-  NumPy              Numerical operations
-  Matplotlib         Plotting
-  Seaborn            Statistical visualization
-  Scikit-learn       StandardScaler, K-Means, silhouette score, and PCA
-  Jupyter Notebook   Interactive analysis and documentation
+Alternatively, explore the complete workflow in `customer_segmentation.ipynb`.
 
 ## Skills Demonstrated
 
--   Exploratory Data Analysis (EDA)
--   Feature selection for clustering
--   Feature standardization
--   Unsupervised machine learning
--   K-Means clustering
--   Elbow Method and Silhouette Score
--   PCA-based dimensionality reduction for visualization
--   Cluster profiling and interpretation
--   Translating analytical findings into business recommendations
+- Unsupervised Machine Learning
+- K-Means Clustering
+- Feature Selection
+- Feature Scaling
+- Elbow Method
+- Silhouette Analysis
+- Customer Segmentation
+- Data Visualization
+- Cluster Profiling
+- Business-Oriented Data Interpretation
 
 ## Author
 
-**Saklin Mostak Molla**\
-Data Science Student \| Aspiring Data Scientist
+**Saklin Mostak Molla**
 
--   GitHub: [@Saklin-labs](https://github.com/Saklin-labs)
+B.Sc. Data Science Student | Aspiring Data Scientist
 
-------------------------------------------------------------------------
+- GitHub: [@Saklin-labs](https://github.com/Saklin-labs)
+- LinkedIn: [Saklin Molla](https://www.linkedin.com/in/saklin-molla-824b292b3/)
 
-::: {align="center"}
-*Completed as part of the IncodeVision Data Science Internship --- Task
-04.*
-:::
+---
+
+<p align="center">
+  <i>Using unsupervised learning to discover meaningful customer patterns.</i>
+</p>
